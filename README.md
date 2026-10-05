@@ -8,7 +8,7 @@ A home-screen widget for Android that shows 3 to 5 Korean words a day, most comm
 - In a small slot (2 columns by 1 row) the widget is a card with three sides. Tap once and the word (Hangul, romanization, meaning) turns into an example sentence with its translation. Tap again and you see what each part of that sentence means, for example 안녕 = peace · 하 = be, do · 세요 = respectful polite ending. The next tap moves on to the next word. The card also steps forward by itself every hour.
 - The widget picker also offers **Hangul Daily (2×2)**. In that size the card shows the word, its example, the translation and the parts all at once, so one tap moves to the next word.
 - Make the widget taller still and it lists all of today's words.
-- Open the app to see today's words in large type, change how many you get per day, or hide the romanization.
+- Open the app to see today's words in large type, change how many you get per day, or hide the romanization. **‹ Previous day** goes back through earlier days, each with the words it had, even if you changed how many words per day in between.
 - It works offline and asks for no permissions.
 
 ## Install on the phone

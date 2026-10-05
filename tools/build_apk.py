@@ -30,8 +30,8 @@ OUT_APK = ROOT / 'hangul-daily.apk'
 PLATFORM = 'android-35'
 BUILD_TOOLS = '35.0.1'
 MIN_SDK = 26
-VERSION_CODE = 4
-VERSION_NAME = '1.3'
+VERSION_CODE = 5
+VERSION_NAME = '1.4'
 
 # A debug key in the standard Android debug-key format. Its password is the public
 # convention ("android"), not a secret. Keep this file: an update must be signed with

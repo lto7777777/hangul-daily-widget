@@ -85,6 +85,25 @@ public final class LogicTest {
         int[] afterSwitch = DailyPlan.indices(110, firstIdx, 3, 110, total);
         check(afterSwitch.length == 3 && afterSwitch[0] == 50, "switch to 3 keeps today's first word");
         check(DailyPlan.firstIndex(110, firstIdx, 3, 111, total) == 53, "next day steps by 3");
+
+        // History: past days keep their words after a change of words per day
+        String h0 = DailyPlan.appendHistory("", 100, 0, 5);
+        int changeFirst = DailyPlan.firstIndexOn(DailyPlan.parseHistory(h0), 110, total);
+        check(changeFirst == 50, "setPerDay on day 11 keeps index 50");
+        long[][] hist = DailyPlan.parseHistory(DailyPlan.appendHistory(h0, 110, changeFirst, 3));
+        check(hist.length == 2, "two history entries");
+        check(DailyPlan.indicesOn(hist, 105, total)[0] == 25, "day 6, before the change: 5 a day");
+        int[] dayBefore = DailyPlan.indicesOn(hist, 109, total);
+        check(dayBefore[0] == 45 && dayBefore.length == 5, "the day before the change still shows 5 words");
+        int[] changeDay = DailyPlan.indicesOn(hist, 110, total);
+        check(changeDay[0] == 50 && changeDay.length == 3, "change day: 3 words from 50");
+        check(DailyPlan.indicesOn(hist, 111, total)[0] == 53, "after the change: 3 a day");
+        check(DailyPlan.indicesOn(hist, 99, total)[0] == 0, "before day 1 shows day 1");
+        long[][] sameDay = DailyPlan.parseHistory("100,0,5;110,50,3;110,50,4");
+        check(DailyPlan.indicesOn(sameDay, 111, total)[0] == 54, "two changes on one day: the later one wins");
+        check(DailyPlan.parseHistory("junk;100,0,5;1,2;x,y,z").length == 1, "malformed entries are skipped");
+        check(DailyPlan.parseHistory(null).length == 0 && DailyPlan.parseHistory("").length == 0, "empty history");
+        check(DailyPlan.indicesOn(new long[0][], 7, total).length == 5, "no history falls back to 5 a day");
         check(DailyPlan.clampPerDay(9) == 5 && DailyPlan.clampPerDay(1) == 3, "clamp 3..5");
         check(DailyPlan.dayNumber(100, 100) == 1 && DailyPlan.dayNumber(100, 104) == 5, "day number");
         check(DailyPlan.dayNumber(100, 90) == 1, "day number with clock set back");

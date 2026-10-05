@@ -39,6 +39,60 @@ final class DailyPlan {
         return out;
     }
 
+    /**
+     * The words-per-day history, oldest first: one {day, first index, words per day}
+     * entry for the first run and one for each change of words per day. Stored as
+     * "day,index,perDay;day,index,perDay". Malformed entries are skipped.
+     */
+    static long[][] parseHistory(String text) {
+        java.util.List<long[]> out = new java.util.ArrayList<>();
+        if (text != null) {
+            for (String entry : text.split(";")) {
+                String[] f = entry.split(",");
+                if (f.length != 3) {
+                    continue;
+                }
+                try {
+                    out.add(new long[] {Long.parseLong(f[0].trim()), Long.parseLong(f[1].trim()),
+                            Long.parseLong(f[2].trim())});
+                } catch (NumberFormatException ignored) {
+                    // skip it; the remaining entries still describe the other days
+                }
+            }
+        }
+        return out.toArray(new long[0][]);
+    }
+
+    static String appendHistory(String text, long day, int index, int perDay) {
+        String entry = day + "," + index + "," + perDay;
+        return text == null || text.isEmpty() ? entry : text + ";" + entry;
+    }
+
+    /** The entry in force on a day: the last one starting on or before it, else the first. */
+    private static long[] entryOn(long[][] history, long day) {
+        if (history.length == 0) {
+            return new long[] {day, 0, DEFAULT_PER_DAY};
+        }
+        long[] found = history[0];
+        for (long[] entry : history) {
+            if (entry[0] <= day) {
+                found = entry;
+            }
+        }
+        return found;
+    }
+
+    static int firstIndexOn(long[][] history, long day, int total) {
+        long[] e = entryOn(history, day);
+        return firstIndex(e[0], (int) e[1], clampPerDay((int) e[2]), day, total);
+    }
+
+    /** The words of any day, past or present, as the history says they were. */
+    static int[] indicesOn(long[][] history, long day, int total) {
+        long[] e = entryOn(history, day);
+        return indices(e[0], (int) e[1], clampPerDay((int) e[2]), day, total);
+    }
+
     /** Day 1 is the first day the app ran. */
     static long dayNumber(long startDay, long today) {
         return Math.max(0L, today - startDay) + 1;

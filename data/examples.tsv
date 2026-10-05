@@ -1,0 +1,104 @@
+# One example per word, written for this app. Checked by tools/build_words.py:
+# the pieces must join back into the example, and a verb or adjective must name
+# its dictionary form in a gloss.
+# key	example	translation	parts
+것	이것은 뭐예요?	What is this?	이=this | 것=thing | 은=topic marker | 뭐=what | 예요=is (polite)
+하다	숙제를 해요.	I'm doing my homework.	숙제=homework | 를=object marker | 해요=do (하다), polite
+있다	시간 있어요?	Do you have time?	시간=time | 있=have, there is (있다) | 어요=polite ending
+수	할 수 있어요.	I can do it.	할=to do (하다), future form | 수=way, possibility | 있=there is (있다) | 어요=polite ending
+나	나는 학생이야.	I'm a student. (casual)	나=I, me (casual) | 는=topic marker | 학생=student | 이야=am (casual)
+없다	돈이 없어요.	I don't have any money.	돈=money | 이=subject marker | 없=there is none (없다) | 어요=polite ending
+않다	비싸지 않아요.	It's not expensive.	비싸=expensive (비싸다) | 지=link before 않다 | 않=not (않다) | 아요=polite ending
+사람	저 사람은 누구예요?	Who is that person?	저=that (over there) | 사람=person | 은=topic marker | 누구=who | 예요=is (polite)
+우리	우리 집에 가요.	We're going home.	우리=we, our | 집=house, home | 에=to (a place) | 가=go (가다) | 요=polite ending
+그	그는 의사예요.	He is a doctor.	그=he (mostly in writing) | 는=topic marker | 의사=doctor | 예요=is (polite)
+아니다	저는 학생이 아니에요.	I'm not a student.	저=I (polite) | 는=topic marker | 학생=student | 이=subject marker (used before 아니다) | 아니에요=am not (아니다), polite
+보다	한번 먹어 봐요.	Try eating it.	한번=once, give it a go | 먹어=eat (먹다) + link | 봐요=try (보다), polite
+거	이거 뭐예요?	What's this?	이=this | 거=thing (spoken 것) | 뭐=what | 예요=is (polite)
+보다#2	영화를 봐요.	I'm watching a movie.	영화=movie | 를=object marker | 봐요=watch, see (보다), polite
+같다	우리는 나이가 같아요.	We're the same age.	우리=we | 는=topic marker | 나이=age | 가=subject marker | 같=same (같다) | 아요=polite ending
+주다	물 좀 주세요.	Some water, please.	물=water | 좀=please (softener) | 주=give (주다) | 세요=polite request
+대하다	한국에 대해 알고 싶어요.	I want to know about Korea.	한국=Korea | 에=(goes with 대해) | 대해=about (대하다) | 알=know (알다) | 고=link | 싶=want to (싶다) | 어요=polite ending
+가다	학교에 가요.	I'm going to school.	학교=school | 에=to (a place) | 가=go (가다) | 요=polite ending
+년	한국에서 일 년 살았어요.	I lived in Korea for a year.	한국=Korea | 에서=in (a place) | 일=one | 년=year | 살았=lived (살다), past | 어요=polite ending
+한	한 시간 기다렸어요.	I waited for an hour.	한=one (before a counter) | 시간=hour | 기다렸=waited (기다리다), past | 어요=polite ending
+말	한국말을 배워요.	I'm learning Korean.	한국=Korea | 말=language, speech | 을=object marker | 배워요=learn (배우다), polite
+일	오늘 일이 많아요.	I have a lot of work today.	오늘=today | 일=work | 이=subject marker | 많=a lot (많다) | 아요=polite ending
+이	책을 쓴 이는 누구예요?	Who is the person who wrote the book?	책=book | 을=object marker | 쓴=who wrote (쓰다) | 이=person | 는=topic marker | 누구=who | 예요=is (polite)
+말하다	천천히 말해 주세요.	Please speak slowly.	천천히=slowly | 말해=speak (말하다) + link | 주세요=please do it for me (주다)
+위하다	건강을 위해 운동해요.	I exercise for my health.	건강=health | 을=object marker | 위해=for (위하다) | 운동해요=exercise (운동하다), polite
+그러나	비싸요. 그러나 좋아요.	It's expensive. But it's good.	비싸=expensive (비싸다) | 요=polite ending | 그러나=but, however (written style) | 좋=good (좋다) | 아요=polite ending
+오다	친구가 와요.	My friend is coming.	친구=friend | 가=subject marker | 와요=come (오다), polite
+알다	저도 알아요.	I know too.	저=I (polite) | 도=too, also | 알=know (알다) | 아요=polite ending
+씨	민수 씨, 안녕하세요.	Hello, Minsu.	민수=Minsu (a name) | 씨=Mr./Ms. | 안녕=peace, well-being | 하=be, do (하다) | 세요=respectful polite ending
+그렇다	네, 그래요.	Yes, that's right.	네=yes | 그래요=that's so (그렇다), polite
+크다	이 신발은 커요.	These shoes are big.	이=this | 신발=shoes | 은=topic marker | 커요=is big (크다), polite
+일#2	오늘은 3월 1일이에요.	Today is March 1st.	오늘=today | 은=topic marker | 3월=March (3 + month) | 1=one | 일=day (of the month) | 이에요=is (polite)
+사회	한국 사회는 빨리 변해요.	Korean society changes fast.	한국=Korea | 사회=society | 는=topic marker | 빨리=fast | 변해요=change (변하다), polite
+많다	사람이 많아요.	There are a lot of people.	사람=person, people | 이=subject marker | 많=many (많다) | 아요=polite ending
+안	오늘은 안 가요.	I'm not going today.	오늘=today | 은=topic marker | 안=not | 가=go (가다) | 요=polite ending
+좋다	날씨가 좋아요.	The weather is nice.	날씨=weather | 가=subject marker | 좋=good (좋다) | 아요=polite ending
+더	더 주세요.	More, please.	더=more | 주=give (주다) | 세요=polite request
+받다	선물을 받았어요.	I got a present.	선물=present, gift | 을=object marker | 받았=received (받다), past | 어요=polite ending
+그것	그것은 제 책이에요.	That is my book.	그것=that thing | 은=topic marker | 제=my (polite) | 책=book | 이에요=is (polite)
+집	지금 집에 있어요.	I'm at home now.	지금=now | 집=house, home | 에=at (a place) | 있=be (있다) | 어요=polite ending
+나오다	밖으로 나와요.	Come outside.	밖=outside | 으로=toward | 나와요=come out (나오다), polite
+그리고	밥을 먹었어요. 그리고 잤어요.	I ate. And then I slept.	밥=rice, a meal | 을=object marker | 먹었=ate (먹다), past | 어요=polite ending | 그리고=and, and then | 잤=slept (자다), past | 어요=polite ending
+문제	문제가 있어요.	There's a problem.	문제=problem | 가=subject marker | 있=there is (있다) | 어요=polite ending
+그런	그런 말 하지 마세요.	Don't say things like that.	그런=such, that kind of | 말=words | 하=say, do (하다) | 지=link before 말다 | 마세요=please don't (말다)
+살다	서울에 살아요.	I live in Seoul.	서울=Seoul | 에=in (a place) | 살=live (살다) | 아요=polite ending
+저	저 건물은 뭐예요?	What is that building?	저=that (over there) | 건물=building | 은=topic marker | 뭐=what | 예요=is (polite)
+못하다	저는 수영을 못해요.	I can't swim.	저=I (polite) | 는=topic marker | 수영=swimming | 을=object marker | 못해요=can't do (못하다), polite
+생각하다	다시 생각해 볼게요.	I'll think it over.	다시=again | 생각해=think (생각하다) + link | 볼게요=I'll try (보다), polite
+모르다	잘 모르겠어요.	I'm not sure.	잘=well | 모르=not know (모르다) | 겠어요=softening ending, polite
+속	가방 속에 책이 있어요.	There's a book in the bag.	가방=bag | 속=inside | 에=in (a place) | 책=book | 이=subject marker | 있=there is (있다) | 어요=polite ending
+만들다	김치를 만들어요.	I'm making kimchi.	김치=kimchi | 를=object marker | 만들=make (만들다) | 어요=polite ending
+데	갈 데가 없어요.	I have nowhere to go.	갈=to go (가다), future form | 데=place | 가=subject marker | 없=there is none (없다) | 어요=polite ending
+앞	학교 앞에서 만나요.	Let's meet in front of the school.	학교=school | 앞=front | 에서=at (a place) | 만나=meet (만나다) | 요=polite ending
+경우	이런 경우가 많아요.	Cases like this are common.	이런=like this | 경우=case | 가=subject marker | 많=many (많다) | 아요=polite ending
+중	지금 회의 중이에요.	I'm in a meeting right now.	지금=now | 회의=meeting | 중=in the middle of | 이에요=is (polite)
+어떤	어떤 음식을 좋아해요?	What kind of food do you like?	어떤=what kind of | 음식=food | 을=object marker | 좋아해요=like (좋아하다), polite
+잘	노래를 정말 잘 불러요.	You sing really well.	노래=song | 를=object marker | 정말=really | 잘=well | 불러요=sing (부르다), polite
+그녀	그녀는 가수예요.	She is a singer.	그녀=she (mostly in writing) | 는=topic marker | 가수=singer | 예요=is (polite)
+먹다	아침을 먹었어요.	I had breakfast.	아침=breakfast, morning | 을=object marker | 먹었=ate (먹다), past | 어요=polite ending
+자신	자신을 믿으세요.	Believe in yourself.	자신=oneself | 을=object marker | 믿=believe (믿다) | 으세요=polite request
+문화	한국 문화를 좋아해요.	I like Korean culture.	한국=Korea | 문화=culture | 를=object marker | 좋아해요=like (좋아하다), polite
+원	이거 오천 원이에요.	This is 5,000 won.	이거=this (thing) | 오천=five thousand | 원=won (Korean money) | 이에요=is (polite)
+생각	좋은 생각이에요!	That's a good idea!	좋은=good (좋다), before a noun | 생각=idea, thought | 이에요=is (polite)
+어떻다	이 옷 어때요?	How do these clothes look?	이=this | 옷=clothes | 어때요=how is it (어떻다), polite
+명	친구 세 명이 왔어요.	Three friends came.	친구=friend | 세=three (before a counter) | 명=people (counter) | 이=subject marker | 왔=came (오다), past | 어요=polite ending
+통하다	우리는 말이 잘 통해요.	We really understand each other.	우리=we | 는=topic marker | 말=talk, words | 이=subject marker | 잘=well | 통해요=get through, connect (통하다), polite
+그러다	그러지 마세요.	Please don't do that.	그러=do that (그러다) | 지=link before 말다 | 마세요=please don't (말다)
+소리	밖에서 이상한 소리가 나요.	There's a strange noise outside.	밖=outside | 에서=at, from (a place) | 이상한=strange (이상하다), before a noun | 소리=sound, noise | 가=subject marker | 나요=is made, comes out (나다), polite
+다시	다시 말해 주세요.	Please say it again.	다시=again | 말해=say (말하다) + link | 주세요=please do it for me (주다)
+다른	다른 색 있어요?	Do you have another color?	다른=other, different | 색=color | 있=there is (있다) | 어요=polite ending
+이런	이런 날씨가 좋아요.	I like weather like this.	이런=like this | 날씨=weather | 가=subject marker | 좋=good (좋다) | 아요=polite ending
+여자	저 여자는 제 언니예요.	That woman is my older sister.	저=that (over there) | 여자=woman | 는=topic marker | 제=my (polite) | 언니=older sister (said by a woman) | 예요=is (polite)
+개	사과 두 개 주세요.	Two apples, please.	사과=apple | 두=two (before a counter) | 개=counter for things | 주=give (주다) | 세요=polite request
+정도	한 시간 정도 걸려요.	It takes about an hour.	한=one (before a counter) | 시간=hour | 정도=about, around | 걸려요=takes (time) (걸리다), polite
+다	숙제를 다 했어요.	I finished all my homework.	숙제=homework | 를=object marker | 다=all | 했=did (하다), past | 어요=polite ending
+좀	좀 도와주세요.	Please help me.	좀=please, a little | 도와=help (돕다) | 주세요=please do it for me (주다)
+싶다	집에 가고 싶어요.	I want to go home.	집=home | 에=to (a place) | 가=go (가다) | 고=link | 싶=want to (싶다) | 어요=polite ending
+보이다	여기서 바다가 보여요.	You can see the sea from here.	여기=here | 서=from, at (short for 에서) | 바다=sea | 가=subject marker | 보여요=can be seen (보이다), polite
+가지다	펜 가지고 있어요?	Do you have a pen?	펜=pen | 가지=have, hold (가지다) | 고=link | 있=be (있다) | 어요=polite ending
+함께	함께 가요!	Let's go together!	함께=together | 가=go (가다) | 요=polite ending (here: let's)
+아이	아이가 웃어요.	The child is smiling.	아이=child | 가=subject marker | 웃=smile, laugh (웃다) | 어요=polite ending
+지나다	벌써 일 년이 지났어요.	A year has already passed.	벌써=already | 일=one | 년=year | 이=subject marker | 지났=passed (지나다), past | 어요=polite ending
+많이	많이 드세요.	Enjoy your meal. (literally: eat a lot)	많이=a lot | 드세요=please eat (honorific of 먹다)
+시간	시간이 없어요.	I don't have time.	시간=time | 이=subject marker | 없=there is none (없다) | 어요=polite ending
+너	너 어디야?	Where are you? (casual)	너=you (casual) | 어디=where | 야=is (casual)
+인간	인간은 누구나 실수를 해요.	Every human makes mistakes.	인간=human | 은=topic marker | 누구나=anyone, everyone | 실수=mistake | 를=object marker | 해요=make, do (하다), polite
+사실	그건 사실이에요.	That's true.	그건=that (short for 그것은) | 사실=fact, truth | 이에요=is (polite)
+나다	생각이 안 나요.	I can't remember.	생각=thought | 이=subject marker | 안=not | 나요=come (to mind) (나다), polite
+이렇다	날씨가 왜 이래요?	Why is the weather like this?	날씨=weather | 가=subject marker | 왜=why | 이래요=is like this (이렇다), polite
+어머니	어머니는 선생님이세요.	My mother is a teacher.	어머니=mother | 는=topic marker | 선생님=teacher | 이세요=is (honorific, polite)
+눈	눈이 예뻐요.	Your eyes are pretty.	눈=eyes | 이=subject marker | 예뻐요=pretty (예쁘다), polite
+뭐	뭐 먹을래요?	What do you want to eat?	뭐=what | 먹=eat (먹다) | 을래요=do you want to (asking someone's choice)
+점	이 점이 좋아요.	I like this about it.	이=this | 점=point, aspect | 이=subject marker | 좋=good (좋다) | 아요=polite ending
+의하다	뉴스에 의하면 비가 온대요.	According to the news, it's going to rain.	뉴스=news | 에=(goes with 의하면) | 의하면=according to (의하다) | 비=rain | 가=subject marker | 온대요=will come, they say (오다), reported speech
+시대	지금은 인터넷 시대예요.	Now is the age of the internet.	지금=now | 은=topic marker | 인터넷=internet | 시대=age, era | 예요=is (polite)
+다음	다음 주에 봐요.	See you next week.	다음=next | 주=week | 에=in, at (a time) | 봐요=see (보다), polite
+이러하다	결과는 이러합니다.	The results are as follows.	결과=result | 는=topic marker | 이러합니다=is as follows (이러하다), formal
+누구	누구세요?	Who is it?	누구=who | 세요=are you (honorific, polite)
+곳	좋은 곳이에요.	It's a nice place.	좋은=good (좋다), before a noun | 곳=place | 이에요=is (polite)
+여러	여러 나라에 가 봤어요.	I've been to several countries.	여러=several, various | 나라=country | 에=to (a place) | 가=go (가다) | 봤=tried, have done (보다), past | 어요=polite ending

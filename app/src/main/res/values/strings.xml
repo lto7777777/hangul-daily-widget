@@ -8,5 +8,7 @@
     <string name="subtitle">Day %1$d · from word %2$d of %3$d</string>
     <string name="words_per_day">Words per day</string>
     <string name="show_roman">Show romanization</string>
-    <string name="help">To add the widget, pinch the home screen, tap Widgets, then pick Hangul Daily. Tap the small card to see the next word; it also moves on by itself every hour. Make the widget taller and it lists all of today\'s words.\n\nIf the words have not changed after midnight, open Settings, then Battery, then App launch, find Hangul Daily, switch it to manual and allow it to run in the background.</string>
+    <string name="example_label">예문 · Example</string>
+    <string name="parts_label">Word by word</string>
+    <string name="help">To add the widget, pinch the home screen, tap Widgets, then pick Hangul Daily. Tap the small card to go from the word to an example sentence, then to what each part of the sentence means, then on to the next word. It also moves on by itself every hour. Make the widget taller and it lists all of today\'s words.\n\nThe examples were written for this app, not taken from a dictionary.\n\nIf the words have not changed after midnight, open Settings, then Battery, then App launch, find Hangul Daily, switch it to manual and allow it to run in the background.</string>
 </resources>

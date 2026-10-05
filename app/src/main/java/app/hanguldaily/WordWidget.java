@@ -14,12 +14,13 @@ import android.widget.RemoteViews;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Home-screen widget. In a small slot (like Duolingo's 2x1) it shows one word as a card
- * that moves to the next word on tap and every hour. When all of today's words fit,
- * it lists them.
+ * Home-screen widget. In a small slot (like Duolingo's 2x1) it is a card that steps,
+ * on every tap and every hour, through each word, its example sentence, and what each
+ * part of that sentence means. When all of today's words fit, it lists them.
  *
  * Today's words depend only on the date, so any update shows the right ones even if
  * the midnight alarm was held back by the phone's battery manager.
@@ -92,29 +93,77 @@ public final class WordWidget extends AppWidgetProvider {
         int widthDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 0);
         int heightDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, 0);
         boolean roman = Store.showRoman(context);
-        RemoteViews views = Sizing.fitsList(widthDp, heightDp, today.length)
-                ? list(context, words, today, roman)
-                : card(context, id, words, today, widthDp, heightDp, roman);
+
+        boolean[] hasExample = new boolean[today.length];
+        int withExample = 0;
+        for (int i = 0; i < today.length; i++) {
+            hasExample[i] = words.get(today[i]).hasExample();
+            withExample += hasExample[i] ? 1 : 0;
+        }
+
+        RemoteViews views;
+        if (Sizing.fitsList(widthDp, heightDp, today.length, withExample)) {
+            views = list(context, words, today, roman);
+        } else {
+            int[] face = DailyPlan.cardFace(LocalTime.now().getHour(), Store.taps(context, id), hasExample);
+            WordList.Word word = words.get(today[face[0]]);
+            String counter = (face[0] + 1) + "/" + today.length;
+            if (face[1] == DailyPlan.FACE_EXAMPLE) {
+                views = exampleCard(context, word, counter, widthDp, heightDp, roman);
+            } else if (face[1] == DailyPlan.FACE_PARTS) {
+                views = partsCard(context, word, counter, heightDp);
+            } else {
+                views = wordCard(context, word, counter, widthDp, heightDp, roman);
+            }
+            views.setOnClickPendingIntent(R.id.card_root, nextIntent(context, id));
+        }
         manager.updateAppWidget(id, views);
     }
 
-    private static RemoteViews card(Context context, int id, List<WordList.Word> words, int[] today,
-                                    int widthDp, int heightDp, boolean roman) {
-        int pos = DailyPlan.cardPosition(LocalTime.now().getHour(), Store.taps(context, id), today.length);
-        WordList.Word word = words.get(today[pos]);
+    private static RemoteViews wordCard(Context context, WordList.Word word, String counter,
+                                        int widthDp, int heightDp, boolean roman) {
         boolean roomy = Sizing.roomyCard(heightDp);
         float koreanSp = Sizing.cardKoreanSp(word.korean, widthDp, roomy);
-
         RemoteViews v = new RemoteViews(context.getPackageName(), R.layout.widget_card);
         v.setViewVisibility(R.id.card_header, roomy ? View.VISIBLE : View.GONE);
-        v.setTextViewText(R.id.card_counter, (pos + 1) + "/" + today.length);
+        v.setTextViewText(R.id.card_counter, counter);
         v.setTextViewText(R.id.card_korean, word.korean);
         v.setTextViewTextSize(R.id.card_korean, TypedValue.COMPLEX_UNIT_SP, koreanSp);
         v.setTextViewText(R.id.card_roman, word.roman);
         v.setViewVisibility(R.id.card_roman, roman ? View.VISIBLE : View.GONE);
         v.setTextViewText(R.id.card_meaning, word.meaning);
         v.setInt(R.id.card_meaning, "setMaxLines", Sizing.cardMeaningLines(heightDp, koreanSp, roman));
-        v.setOnClickPendingIntent(R.id.card_root, nextIntent(context, id));
+        return v;
+    }
+
+    private static RemoteViews exampleCard(Context context, WordList.Word word, String counter,
+                                           int widthDp, int heightDp, boolean roman) {
+        boolean roomy = Sizing.roomyCard(heightDp);
+        float sp = Sizing.exampleSp(word.example, widthDp, roomy);
+        int lines = Sizing.exampleLines(word.example, widthDp, sp);
+        RemoteViews v = new RemoteViews(context.getPackageName(), R.layout.widget_example);
+        v.setViewVisibility(R.id.card_header, roomy ? View.VISIBLE : View.GONE);
+        v.setTextViewText(R.id.card_counter, counter);
+        v.setTextViewText(R.id.example_sentence, word.example);
+        v.setTextViewTextSize(R.id.example_sentence, TypedValue.COMPLEX_UNIT_SP, sp);
+        v.setTextViewText(R.id.example_roman, word.exampleRoman);
+        v.setViewVisibility(R.id.example_roman, roman ? View.VISIBLE : View.GONE);
+        v.setTextViewText(R.id.example_translation, word.translation);
+        v.setInt(R.id.example_translation, "setMaxLines", Sizing.translationLines(heightDp, sp, lines, roman));
+        return v;
+    }
+
+    private static RemoteViews partsCard(Context context, WordList.Word word, String counter, int heightDp) {
+        List<String> items = new ArrayList<>();
+        for (WordList.Part part : word.parts) {
+            items.add(part.piece + " = " + Sizing.shortGloss(part.gloss));
+        }
+        int lines = Sizing.partsLines(heightDp);
+        RemoteViews v = new RemoteViews(context.getPackageName(), R.layout.widget_parts);
+        v.setTextViewText(R.id.card_counter, counter);
+        v.setTextViewText(R.id.parts_sentence, word.example);
+        v.setTextViewText(R.id.parts_body, Sizing.packLines(items, lines));
+        v.setInt(R.id.parts_body, "setMaxLines", lines);
         return v;
     }
 
@@ -130,6 +179,12 @@ public final class WordWidget extends AppWidgetProvider {
             row.setTextViewText(R.id.row_roman, word.roman);
             row.setViewVisibility(R.id.row_roman, roman ? View.VISIBLE : View.GONE);
             row.setTextViewText(R.id.row_meaning, word.meaning);
+            if (word.hasExample()) {
+                row.setTextViewText(R.id.row_example, word.example + "  " + word.translation);
+                row.setViewVisibility(R.id.row_example, View.VISIBLE);
+            } else {
+                row.setViewVisibility(R.id.row_example, View.GONE);
+            }
             v.addView(R.id.list_rows, row);
         }
         v.setOnClickPendingIntent(R.id.list_root, openAppIntent(context));

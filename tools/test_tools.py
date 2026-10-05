@@ -5,7 +5,9 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from build_words import DEFAULT_SRC, clean_meaning, parse  # noqa: E402
+from build_words import (DEFAULT_CORRECTIONS, DEFAULT_EXAMPLES, DEFAULT_SRC,  # noqa: E402
+                         build, check_example, clean_meaning, entry_keys, parse,
+                         parse_parts, read_lines)
 from romanize import romanize  # noqa: E402
 
 # Expected forms follow Revised Romanization of the standard pronunciation,
@@ -100,6 +102,61 @@ class ParseTest(unittest.TestCase):
         self.assertEqual(clean_meaning('( composition, structure )'), '(composition, structure)')
 
 
+SOURCE = [
+    'Korean Word \tEnglish Meaning ',
+    ' 안녕           \t Hello/goodbye ',
+    ' 가다           \t To go ',
+    ' 말             \t words, speaking ',
+    ' 말             \t Horse ',
+]
+
+
+class ExampleTest(unittest.TestCase):
+    def test_entry_keys_number_homographs(self):
+        words, _ = parse(SOURCE)
+        self.assertEqual(entry_keys(words), ['안녕', '가다', '말', '말#2'])
+
+    def test_good_example(self):
+        parts = parse_parts('안녕=peace | 하=be, do (하다) | 세요=polite ending')
+        self.assertEqual(check_example('안녕', '안녕하세요!', 'Hello.', parts), [])
+
+    def test_parts_must_join_to_example(self):
+        parts = parse_parts('안녕=peace | 세요=polite ending')
+        problems = check_example('안녕', '안녕하세요!', 'Hello.', parts)
+        self.assertTrue(any('join' in p for p in problems), problems)
+
+    def test_verb_must_name_dictionary_form(self):
+        parts = parse_parts('학교=school | 에=to | 가요=go, polite')
+        problems = check_example('가다', '학교에 가요.', 'I go to school.', parts)
+        self.assertTrue(any('(가다)' in p for p in problems), problems)
+
+    def test_noun_must_appear(self):
+        parts = parse_parts('물=water | 주세요=please give (주다)')
+        problems = check_example('안녕', '물 주세요.', 'Water, please.', parts)
+        self.assertTrue(any('not in the example' in p for p in problems), problems)
+
+    def test_missing_gloss_and_bad_rows(self):
+        examples = [
+            '말#2\t말을 타요.\tI ride a horse.\t말=horse | 을=object marker | 타요=ride (타다), polite',
+            '말#2\t말이에요.\tIt is a horse.\t말=horse | 이에요=is',
+            '없음\t없어요.\tNone.\t없어요=there is none (없다)',
+            '가다\t가요.\tGo.\t가 | 요=polite ending',
+        ]
+        rows, problems = build(SOURCE, examples, [])
+        text = '\n'.join(problems)
+        self.assertIn('second example', text)
+        self.assertIn('unknown key', text)
+        self.assertIn('needs both a piece and a gloss', text)
+        self.assertEqual(rows[3][3], '말을 타요.')   # 말#2 (horse) got the first example
+        self.assertEqual(rows[2][3], '')             # 말 (words) has none
+
+    def test_corrections_apply_and_unknown_key_fails(self):
+        rows, problems = build(SOURCE, [], ['가다\tTo go (somewhere)\tclearer', '오다\tTo come\tx'])
+        self.assertEqual(rows[1][2], 'To go (somewhere)')
+        self.assertEqual(len(problems), 1)
+        self.assertIn('unknown key', problems[0])
+
+
 class RealListTest(unittest.TestCase):
     """Invariants on the actual kor/5324kor.txt."""
 
@@ -135,6 +192,20 @@ class RealListTest(unittest.TestCase):
         meanings = dict((k, m) for k, m in reversed(self.words))
         self.assertIn('table game', meanings['벌이다'])
         self.assertIn('ANDONG', meanings['안동 간 고등어'])
+
+    def test_examples_and_corrections_files_are_clean(self):
+        rows, problems = build(read_lines(DEFAULT_SRC), read_lines(DEFAULT_EXAMPLES),
+                               read_lines(DEFAULT_CORRECTIONS))
+        self.assertEqual(problems, [])
+        self.assertTrue(all(r[3] for r in rows[:100]), 'first 100 words all have examples')
+        by_key = dict(zip(entry_keys([(r[0], r[2]) for r in rows]), rows))
+        self.assertEqual(by_key['여기'][2], 'Here')
+        self.assertIn('try', by_key['보다'][2])
+        self.assertEqual(by_key['보다#2'][3], '영화를 봐요.')
+        for r in rows:
+            for field in r:
+                self.assertNotIn('\t', field)
+                self.assertNotIn('\n', field)
 
 
 if __name__ == '__main__':

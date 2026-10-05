@@ -6,6 +6,11 @@ final class DailyPlan {
     static final int MAX_PER_DAY = 5;
     static final int DEFAULT_PER_DAY = 5;
 
+    /** Sides of the small card: the word, its example sentence, and the sentence's parts. */
+    static final int FACE_WORD = 0;
+    static final int FACE_EXAMPLE = 1;
+    static final int FACE_PARTS = 2;
+
     private DailyPlan() {}
 
     static int clampPerDay(int n) {
@@ -39,8 +44,24 @@ final class DailyPlan {
         return Math.max(0L, today - startDay) + 1;
     }
 
-    /** Which of today's words the small card shows: it moves on every hour and on every tap. */
-    static int cardPosition(int hourOfDay, int taps, int count) {
-        return Math.floorMod(hourOfDay + taps, count);
+    /**
+     * What the small card shows, as {position in today's words, face}. Each word has a
+     * word face, then an example face and a parts face if it has an example. The card
+     * steps one face on every hour and on every tap, wrapping after the last word.
+     */
+    static int[] cardFace(int hourOfDay, int taps, boolean[] hasExample) {
+        int total = 0;
+        for (boolean has : hasExample) {
+            total += has ? 3 : 1;
+        }
+        int step = Math.floorMod(hourOfDay + taps, total);
+        for (int i = 0; i < hasExample.length; i++) {
+            int faces = hasExample[i] ? 3 : 1;
+            if (step < faces) {
+                return new int[] {i, step};
+            }
+            step -= faces;
+        }
+        throw new IllegalStateException("no words today");
     }
 }

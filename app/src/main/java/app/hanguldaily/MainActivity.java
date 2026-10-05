@@ -70,6 +70,7 @@ public final class MainActivity extends Activity {
             romanView.setText(word.roman);
             romanView.setVisibility(roman ? View.VISIBLE : View.GONE);
             ((TextView) item.findViewById(R.id.item_meaning)).setText(word.meaning);
+            bindExample(inflater, item, word, roman);
             list.addView(item);
         }
 
@@ -77,5 +78,28 @@ public final class MainActivity extends Activity {
         perDay.check(n == 3 ? R.id.per_day_3 : n == 4 ? R.id.per_day_4 : R.id.per_day_5);
         showRoman.setChecked(roman);
         binding = false;
+    }
+
+    private static void bindExample(LayoutInflater inflater, View item, WordList.Word word, boolean roman) {
+        View block = item.findViewById(R.id.item_example_block);
+        if (!word.hasExample()) {
+            block.setVisibility(View.GONE);
+            return;
+        }
+        block.setVisibility(View.VISIBLE);
+        ((TextView) item.findViewById(R.id.item_example)).setText(word.example);
+        TextView exampleRoman = item.findViewById(R.id.item_example_roman);
+        exampleRoman.setText(word.exampleRoman);
+        exampleRoman.setVisibility(roman ? View.VISIBLE : View.GONE);
+        ((TextView) item.findViewById(R.id.item_translation)).setText(word.translation);
+
+        LinearLayout parts = item.findViewById(R.id.item_parts);
+        parts.removeAllViews();
+        for (WordList.Part part : word.parts) {
+            View row = inflater.inflate(R.layout.item_part, parts, false);
+            ((TextView) row.findViewById(R.id.part_piece)).setText(part.piece);
+            ((TextView) row.findViewById(R.id.part_gloss)).setText(part.gloss);
+            parts.addView(row);
+        }
     }
 }

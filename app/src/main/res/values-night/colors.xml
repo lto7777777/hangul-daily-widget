@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="widget_bg">#E6211C28</color>
+    <color name="ink">#F6F1FA</color>
+    <color name="ink_soft">#D9D1E3</color>
+    <color name="muted">#B3A8C2</color>
+    <color name="accent">#F29BB8</color>
+    <color name="app_bg">#141118</color>
+    <color name="card_bg">#221D29</color>
+</resources>

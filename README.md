@@ -1,0 +1,69 @@
+# Hangul Daily
+
+A home-screen widget for Android that shows 3 to 5 Korean words a day, most common words first. It was made for a Huawei P30 Pro and sized to take the place of the Duolingo streak widget.
+
+## What it does
+
+- Day 1 starts with the most frequent word in the list (것, 하다, 있다…). Each day moves on to the next 3, 4 or 5 words, and after the last word it starts over.
+- In a small slot (2 columns by 1 row) the widget shows one word at a time: the Hangul, its romanization and the meaning. Tap it for the next word. It also moves on by itself every hour.
+- Make the widget taller and it lists all of today's words.
+- Open the app to see today's words in large type, change how many you get per day, or hide the romanization.
+- It works offline and asks for no permissions.
+
+## Install on the phone
+
+1. On the phone, sign in to GitHub in the browser and open this repository's **Releases** page.
+2. Under the newest release, tap `hangul-daily.apk`. When the download finishes, open it.
+3. Android asks whether to allow installs from this source (the browser or Files). Allow it, go back, and tap **Install**. Huawei may warn that AppGallery has not checked the app; install anyway.
+4. If you want the Duolingo widget's spot, long-press that widget and tap **Remove**.
+5. Pinch the home screen with two fingers, tap **Widgets**, find **Hangul Daily** and drag it into place.
+
+If the words don't change after midnight, the battery manager is holding the app back. Open **Settings → Battery → App launch**, find Hangul Daily, switch it to manual and allow it to run in the background.
+
+## Updating without losing your place
+
+Android only installs an update over the old app when both are signed with the same key. Without a stored key, each build gets a new one, so updating means uninstalling first and starting again from day 1.
+
+To keep one key, create it once on a PC that has Java:
+
+```bash
+keytool -genkeypair -keystore debug.keystore -storetype PKCS12 -storepass android -keypass android -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Hangul Daily Debug"
+```
+
+Encode it (in PowerShell: `[Convert]::ToBase64String([IO.File]::ReadAllBytes("debug.keystore"))`):
+
+```bash
+base64 -w0 debug.keystore
+```
+
+Then on GitHub open **Settings → Secrets and variables → Actions → New repository secret**, name it `KEYSTORE_B64` and paste the encoded text. Keep `debug.keystore` somewhere safe, outside the repository.
+
+## How it is built
+
+Every push to `main` runs `.github/workflows/build.yml` on GitHub's Ubuntu runner, which already has the Android SDK. The workflow runs `tools/build_apk.py`, which:
+
+1. tests the romanizer and the word-list parser (`tools/test_tools.py`)
+2. turns `data/5324kor.txt` into `app/src/main/assets/words.tsv` (`tools/build_words.py`)
+3. compiles the resources with `aapt2` and the code with `javac`, checks the day and layout logic (`tools/LogicTest.java`) and converts to dex with `d8`
+4. aligns and signs the APK, then checks it with `apksigner verify` and `aapt2 dump badging`
+
+There is no Gradle. The APK is attached to a release named `build-N`, and the full build log goes to the `ci-report` branch.
+
+To build on a PC instead, install JDK 17 or newer and the Android SDK packages `platforms;android-35` and `build-tools;35.0.1`, then run `python tools/build_apk.py`.
+
+## The word list
+
+`data/5324kor.txt` is copied from the Korean study web app this widget grew out of. It holds Korean words in frequency order with English meanings. The build cleans it up:
+
+- 53 meanings had spilled onto a second line; they are joined back. The web app had been showing them cut short.
+- Stray numbers after some words (`기 13`, `구 15`) are dropped.
+- Exact duplicates are removed. Words with several meanings stay as separate entries, so 말 shows up as "words, speaking", "end" and "horse". That leaves 5,643 entries.
+
+Romanization follows the Revised Romanization of Korean, applied to how a word is pronounced: 한국어 → hangugeo, 국민 → gungmin, 같이 → gachi. One difference is deliberate: ㅎ sound changes apply to nouns too (축하 → chuka, where the official spelling is chukha), because the point is to show how the word sounds. Cases that need a dictionary are not covered. For example, compounds that insert an ㄴ come out wrong (솜이불 gives somibul instead of somnibul).
+
+## Files
+
+- `app/src/main/java/app/hanguldaily/`: the widget (`WordWidget`), the app screen (`MainActivity`), settings (`Store`), day logic (`DailyPlan`), layout sizing (`Sizing`) and the list reader (`WordList`)
+- `app/src/main/res/`: layouts, colours for light and dark mode, the icon
+- `tools/`: build, data and test scripts
+- `data/5324kor.txt`: the source word list

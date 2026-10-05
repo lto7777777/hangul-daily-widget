@@ -1,0 +1,74 @@
+# Builds hangul-daily.apk on GitHub's Ubuntu runner, which already has the Android SDK,
+# Java 17 and Python 3. The APK is attached to a release; the build log goes to the
+# ci-report branch.
+name: Build APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# contents: write lets the job create the release and update the ci-report branch.
+permissions:
+  contents: write
+
+concurrency:
+  group: build-apk
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+
+      - name: Signing key
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            mkdir -p keystore
+            printf '%s' "$KEYSTORE_B64" | base64 -d > keystore/debug.keystore
+            echo "Signing with the key from the KEYSTORE_B64 secret."
+          else
+            echo "::warning::No KEYSTORE_B64 secret, so this build is signed with a new throwaway key. See README."
+          fi
+
+      - name: Build, test, sign and verify
+        run: |
+          mkdir -p build
+          echo "commit ${GITHUB_SHA}" > build/report.txt
+          python3 tools/build_apk.py 2>&1 | tee -a build/report.txt
+          sha256sum hangul-daily.apk | tee -a build/report.txt
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="build-${GITHUB_RUN_NUMBER}"
+          gh release create "$tag" hangul-daily.apk \
+            --target "$GITHUB_SHA" \
+            --title "Hangul Daily ${tag}" \
+            --notes "Open this page on the phone, tap hangul-daily.apk, then open the download to install."
+
+      # Overwrites the one-commit ci-report branch with this run's log.
+      - name: Save build report
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p build
+          [ -f build/report.txt ] || echo "build did not start" > build/report.txt
+          echo "result ${{ job.status }}" >> build/report.txt
+          dir="$RUNNER_TEMP/ci-report"
+          mkdir -p "$dir"
+          cp build/report.txt "$dir/report.txt"
+          cd "$dir"
+          git init -q -b ci-report
+          git add report.txt
+          git -c user.name="github-actions[bot]" \
+              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit -q -m "Build report for ${GITHUB_SHA}"
+          gh auth setup-git
+          git push -q -f "https://github.com/${GITHUB_REPOSITORY}.git" ci-report

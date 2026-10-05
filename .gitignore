@@ -1,0 +1,14 @@
+# Build output and generated files
+build/
+*.apk
+app/src/main/assets/words.tsv
+__pycache__/
+
+# Signing key: never commit it (CI reads it from the KEYSTORE_B64 secret)
+keystore/
+*.keystore
+*.jks
+
+# Local tooling
+.sdk/
+.session-state.md

@@ -1,0 +1,116 @@
+commit 46ccd865ee78d2d14d129a8d7bd00fd121c41725
+SDK /usr/local/lib/android/sdk: android-35, build-tools 35.0.1, minSdk 26, targetSdk 35
+> python3 /home/runner/work/hangul-daily-widget/hangul-daily-widget/tools/test_tools.py 
+......................
+----------------------------------------------------------------------
+Ran 22 tests in 0.178s
+
+OK
+> python3 /home/runner/work/hangul-daily-widget/hangul-daily-widget/tools/build_words.py 
+wrote 5643 words to /home/runner/work/hangul-daily-widget/hangul-daily-widget/app/src/main/assets/words.tsv; 306 have examples, the first 306 without a gap
+> aapt2 compile --dir /home/runner/work/hangul-daily-widget/hangul-daily-widget/app/src/main/res ...
+> aapt2 link -o /home/runner/work/hangul-daily-widget/hangul-daily-widget/build/app-unsigned.apk ...
+> javac --release 11 -encoding ...
+> javac --release 11 -encoding ...
+> java -cp /home/runner/work/hangul-daily-widget/hangul-daily-widget/build/test app.hanguldaily.LogicTest ...
+longest word: 안동 간 고등어 -> 14.7186165sp in a 2-column slot
+longest example: 비가 와요. 그래서 집에 있어요. -> 13.586413sp, 2 line(s)
+LogicTest OK: 5643 words, 306 with examples
+> java -cp /usr/local/lib/android/sdk/build-tools/35.0.1/lib/d8.jar com.android.tools.r8.D8 ...
+> zipalign -f -p 4 ...
+> java -jar /usr/local/lib/android/sdk/build-tools/35.0.1/lib/apksigner.jar sign ...
+> zipalign -c -p 4 ...
+> java -jar /usr/local/lib/android/sdk/build-tools/35.0.1/lib/apksigner.jar verify ...
+Verifies
+Verified using v1 scheme (JAR signing): false
+Verified using v2 scheme (APK Signature Scheme v2): true
+Verified using v3 scheme (APK Signature Scheme v3): true
+Verified using v3.1 scheme (APK Signature Scheme v3.1): false
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+Signer #1 certificate DN: CN=Hangul Daily Debug
+Signer #1 certificate SHA-256 digest: 7f7d080543e5c626b0f28903f2819d65abf5d72f72a212578b11d9c632d59610
+Signer #1 certificate SHA-1 digest: 503c64dff4231af46c77bb917f81717420bb7bdc
+Signer #1 certificate MD5 digest: 618e3931f8900f834fc75ab20c531e33
+Signer #1 key algorithm: RSA
+Signer #1 key size (bits): 2048
+Signer #1 public key SHA-256 digest: 4d3d6b22c9ab01eb2d2549aaf5da9c47e7fd797f750ba4132e404b235cf5b735
+Signer #1 public key SHA-1 digest: 15622cfcfac78bcb1f12d0eff41d3cc51a3cb92e
+Signer #1 public key MD5 digest: 916e12a332689c3aa82d267998d2c05d
+> aapt2 dump badging /home/runner/work/hangul-daily-widget/hangul-daily-widget/hangul-daily.apk 
+package: name='app.hanguldaily' versionCode='5' versionName='1.4' platformBuildVersionName='15' platformBuildVersionCode='35' compileSdkVersion='35' compileSdkVersionCodename='15'
+minSdkVersion:'26'
+targetSdkVersion:'35'
+application-label:'Hangul Daily'
+application-icon-160:'res/mipmap-anydpi-v26/ic_launcher.xml'
+application-icon-65534:'res/mipmap-anydpi-v26/ic_launcher.xml'
+application: label='Hangul Daily' icon='res/mipmap-anydpi-v26/ic_launcher.xml'
+launchable-activity: name='app.hanguldaily.MainActivity'  label='' icon=''
+feature-group: label=''
+  uses-feature: name='android.hardware.faketouch'
+  uses-implied-feature: name='android.hardware.faketouch' reason='default feature for all apps'
+provides-component:'app-widget'
+main
+supports-screens: 'small' 'normal' 'large' 'xlarge'
+supports-any-density: 'true'
+locales: '--_--'
+densities: '160' '65534'
+> aapt2 dump xmltree /home/runner/work/hangul-daily-widget/hangul-daily-widget/hangul-daily.apk ...
+N: android=http://schemas.android.com/apk/res/android (line=3)
+  E: manifest (line=3)
+    A: http://schemas.android.com/apk/res/android:versionCode(0x0101021b)=5
+    A: http://schemas.android.com/apk/res/android:versionName(0x0101021c)="1.4" (Raw: "1.4")
+    A: http://schemas.android.com/apk/res/android:compileSdkVersion(0x01010572)=35
+    A: http://schemas.android.com/apk/res/android:compileSdkVersionCodename(0x01010573)="15" (Raw: "15")
+    A: package="app.hanguldaily" (Raw: "app.hanguldaily")
+    A: platformBuildVersionCode=35
+    A: platformBuildVersionName=15
+      E: uses-sdk (line=0)
+        A: http://schemas.android.com/apk/res/android:minSdkVersion(0x0101020c)=26
+        A: http://schemas.android.com/apk/res/android:targetSdkVersion(0x01010270)=35
+      E: application (line=6)
+        A: http://schemas.android.com/apk/res/android:theme(0x01010000)=@0x7f070000
+        A: http://schemas.android.com/apk/res/android:label(0x01010001)=@0x7f060000
+        A: http://schemas.android.com/apk/res/android:icon(0x01010002)=@0x7f050000
+        A: http://schemas.android.com/apk/res/android:allowBackup(0x01010280)=true
+        A: http://schemas.android.com/apk/res/android:supportsRtl(0x010103af)=false
+          E: activity (line=13)
+            A: http://schemas.android.com/apk/res/android:name(0x01010003)=".MainActivity" (Raw: ".MainActivity")
+            A: http://schemas.android.com/apk/res/android:exported(0x01010010)=true
+              E: intent-filter (line=16)
+                  E: action (line=17)
+                    A: http://schemas.android.com/apk/res/android:name(0x01010003)="android.intent.action.MAIN" (Raw: "android.intent.action.MAIN")
+                  E: category (line=18)
+                    A: http://schemas.android.com/apk/res/android:name(0x01010003)="android.intent.category.LAUNCHER" (Raw: "android.intent.category.LAUNCHER")
+          E: receiver (line=23)
+            A: http://schemas.android.com/apk/res/android:label(0x01010001)=@0x7f06000e
+            A: http://schemas.android.com/apk/res/android:name(0x01010003)=".WordWidget" (Raw: ".WordWidget")
+            A: http://schemas.android.com/apk/res/android:exported(0x01010010)=true
+              E: intent-filter (line=27)
+                  E: action (line=28)
+                    A: http://schemas.android.com/apk/res/android:name(0x01010003)="android.appwidget.action.APPWIDGET_UPDATE" (Raw: "android.appwidget.action.APPWIDGET_UPDATE")
+              E: intent-filter (line=30)
+                  E: action (line=31)
+                    A: http://schemas.android.com/apk/res/android:name(0x01010003)="android.intent.action.TIME_SET" (Raw: "android.intent.action.TIME_SET")
+                  E: action (line=32)
+                    A: http://schemas.android.com/apk/res/android:name(0x01010003)="android.intent.action.TIMEZONE_CHANGED" (Raw: "android.intent.action.TIMEZONE_CHANGED")
+                  E: action (line=33)
+                    A: http://schemas.android.com/apk/res/android:name(0x01010003)="android.intent.action.MY_PACKAGE_REPLACED" (Raw: "android.intent.action.MY_PACKAGE_REPLACED")
+              E: meta-data (line=35)
+                A: http://schemas.android.com/apk/res/android:name(0x01010003)="android.appwidget.provider" (Raw: "android.appwidget.provider")
+                A: http://schemas.android.com/apk/res/android:resource(0x01010025)=@0x7f080001
+          E: receiver (line=41)
+            A: http://schemas.android.com/apk/res/android:label(0x01010001)=@0x7f06000c
+            A: http://schemas.android.com/apk/res/android:name(0x01010003)=".WordWidgetBig" (Raw: ".WordWidgetBig")
+            A: http://schemas.android.com/apk/res/android:exported(0x01010010)=true
+              E: intent-filter (line=45)
+                  E: action (line=46)
+                    A: http://schemas.android.com/apk/res/android:name(0x01010003)="android.appwidget.action.APPWIDGET_UPDATE" (Raw: "android.appwidget.action.APPWIDGET_UPDATE")
+              E: meta-data (line=48)
+                A: http://schemas.android.com/apk/res/android:name(0x01010003)="android.appwidget.provider" (Raw: "android.appwidget.provider")
+                A: http://schemas.android.com/apk/res/android:resource(0x01010025)=@0x7f080000
+
+APK: /home/runner/work/hangul-daily-widget/hangul-daily-widget/hangul-daily.apk (157,220 bytes)
+d05c2346354e4855b815465150aeddad7b3067c8d4c729c1f7dbdcee4fe719a9  hangul-daily.apk
+result success

@@ -5,9 +5,9 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from build_words import (DEFAULT_CORRECTIONS, DEFAULT_EXAMPLES, DEFAULT_SRC,  # noqa: E402
-                         build, check_example, clean_meaning, entry_keys, parse,
-                         parse_parts, read_lines)
+from build_words import (DEFAULT_CORRECTIONS, DEFAULT_EXAMPLES, DEFAULT_ORDER,  # noqa: E402
+                         DEFAULT_SRC, build, check_example, clean_meaning, entry_keys,
+                         interleave, parse, parse_parts, read_lines, read_order)
 from romanize import romanize  # noqa: E402
 
 # Expected forms follow Revised Romanization of the standard pronunciation,
@@ -150,6 +150,27 @@ class ExampleTest(unittest.TestCase):
         self.assertEqual(rows[3][3], '말을 타요.')   # 말#2 (horse) got the first example
         self.assertEqual(rows[2][3], '')             # 말 (words) has none
 
+    def test_interleave_takes_one_from_each_section(self):
+        self.assertEqual(interleave([['a1', 'a2', 'a3'], ['b1'], ['c1', 'c2']]),
+                         ['a1', 'b1', 'c1', 'a2', 'c2', 'a3'])
+        self.assertEqual(interleave([]), [])
+
+    def test_order_moves_words_to_front(self):
+        order = ['[x]', '말#2', '[y]', '가다']
+        rows, problems = build(SOURCE, [], [], order)
+        self.assertEqual(problems, [])
+        self.assertEqual([(r[0], r[2]) for r in rows],
+                         [('말', 'Horse'), ('가다', 'To go'), ('안녕', 'Hello/goodbye'),
+                          ('말', 'Words, speaking')])
+
+    def test_order_rejects_unknown_and_repeated_keys(self):
+        _, problems = build(SOURCE, [], [], ['[x]', '가다', '없음', '가다', '오다'])
+        text = '\n'.join(problems)
+        self.assertIn("unknown key '없음'", text)
+        self.assertIn("'가다' listed twice", text)
+        _, problems = build(SOURCE, [], [], ['가다'])
+        self.assertIn('before any [section]', problems[0])
+
     def test_corrections_apply_and_unknown_key_fails(self):
         rows, problems = build(SOURCE, [], ['가다\tTo go (somewhere)\tclearer', '오다\tTo come\tx'])
         self.assertEqual(rows[1][2], 'To go (somewhere)')
@@ -206,6 +227,21 @@ class RealListTest(unittest.TestCase):
             for field in r:
                 self.assertNotIn('\t', field)
                 self.assertNotIn('\n', field)
+
+    def test_everyday_order_comes_first_and_has_examples(self):
+        order_lines = read_lines(DEFAULT_ORDER)
+        rows, problems = build(read_lines(DEFAULT_SRC), read_lines(DEFAULT_EXAMPLES),
+                               read_lines(DEFAULT_CORRECTIONS), order_lines)
+        self.assertEqual(problems, [])
+        sections, _ = read_order(order_lines)
+        front = sum(len(s) for s in sections)
+        self.assertGreaterEqual(front, 200)
+        self.assertEqual([r[0] for r in rows[:5]], ['안녕', '하다', '사람', '좋다', '하나'])
+        self.assertEqual((rows[5][0], rows[5][3]), ('안녕하다', '안녕하세요?'))
+        missing = [r[0] for r in rows[:front] if not r[3]]
+        self.assertEqual(missing, [], 'every everyday word has an example')
+        self.assertEqual(len(rows), 5643, 'reordering keeps every word exactly once')
+        self.assertEqual(len({(r[0], r[2]) for r in rows}), len(rows))
 
 
 if __name__ == '__main__':

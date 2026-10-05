@@ -31,6 +31,7 @@ DATA = HERE.parent / 'data'
 DEFAULT_SRC = DATA / '5324kor.txt'
 DEFAULT_EXAMPLES = DATA / 'examples.tsv'
 DEFAULT_CORRECTIONS = DATA / 'corrections.tsv'
+DEFAULT_ORDER = DATA / 'everyday_first.txt'
 DEFAULT_OUT = HERE.parent / 'app' / 'src' / 'main' / 'assets' / 'words.tsv'
 
 HANGUL = re.compile('[가-힣]')
@@ -179,13 +180,54 @@ def collect_examples(words, rows):
     return found, problems
 
 
+def read_order(lines):
+    """[section] headers with one key per line under each; returns [[(lineno, key)]], problems."""
+    sections, problems = [], []
+    for lineno, raw in enumerate(lines, start=1):
+        text = raw.strip()
+        if not text or text.startswith('#'):
+            continue
+        if text.startswith('[') and text.endswith(']'):
+            sections.append([])
+        elif sections:
+            sections[-1].append((lineno, text))
+        else:
+            problems.append(f'order line {lineno}: key before any [section]')
+    return sections, problems
+
+
+def interleave(sections):
+    """One item from each section in turn: a1 b1 c1 a2 b2 c2 ..., skipping empty ones."""
+    out = []
+    for i in range(max((len(s) for s in sections), default=0)):
+        for section in sections:
+            if i < len(section):
+                out.append(section[i])
+    return out
+
+
+def front_order(words, sections):
+    """Entry indexes for the order file's words, interleaved, then problems."""
+    index = {k: i for i, k in enumerate(entry_keys(words))}
+    order, seen, problems = [], set(), []
+    for lineno, key in interleave(sections):
+        if key not in index:
+            problems.append(f'order line {lineno}: unknown key {key!r}')
+        elif index[key] in seen:
+            problems.append(f'order line {lineno}: {key!r} listed twice')
+        else:
+            seen.add(index[key])
+            order.append(index[key])
+    return order, problems
+
+
 def encode_parts(parts):
     # No per-piece romanization: a piece on its own reads wrong (있 -> "it",
     # though 있어요 sounds "isseoyo"). The whole example is romanized instead.
     return '|'.join(f'{piece}={gloss}' for piece, gloss in parts)
 
 
-def build(src_lines, example_lines, correction_lines):
+def build(src_lines, example_lines, correction_lines, order_lines=()):
     """All the merging; returns (rows for words.tsv, problems)."""
     words, problems = parse(src_lines)
     corr_rows, p = read_rows(correction_lines, 3, 'corrections')
@@ -196,9 +238,16 @@ def build(src_lines, example_lines, correction_lines):
     problems += p
     examples, p = collect_examples(words, ex_rows)
     problems += p
+    sections, p = read_order(order_lines)
+    problems += p
+    front, p = front_order(words, sections)
+    problems += p
 
+    in_front = set(front)
+    sequence = front + [i for i in range(len(words)) if i not in in_front]
     out = []
-    for i, (korean, meaning) in enumerate(words):
+    for i in sequence:
+        korean, meaning = words[i]
         if i in examples:
             example, translation, parts = examples[i]
             out.append((korean, romanize(korean), meaning,
@@ -217,11 +266,12 @@ def main(argv=None):
     ap.add_argument('--src', type=Path, default=DEFAULT_SRC)
     ap.add_argument('--examples', type=Path, default=DEFAULT_EXAMPLES)
     ap.add_argument('--corrections', type=Path, default=DEFAULT_CORRECTIONS)
+    ap.add_argument('--order', type=Path, default=DEFAULT_ORDER)
     ap.add_argument('--out', type=Path, default=DEFAULT_OUT)
     args = ap.parse_args(argv)
 
     rows, problems = build(read_lines(args.src), read_lines(args.examples),
-                           read_lines(args.corrections))
+                           read_lines(args.corrections), read_lines(args.order))
     if problems:
         for p in problems:
             print('error:', p, file=sys.stderr)

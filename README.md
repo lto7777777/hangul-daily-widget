@@ -4,7 +4,7 @@ A home-screen widget for Android that shows 3 to 5 Korean words a day, most comm
 
 ## What it does
 
-- Day 1 starts with the most frequent word in the list (것, 하다, 있다…). Each day moves on to the next 3, 4 or 5 words, and after the last word it starts over.
+- The first 248 words are everyday ones: greetings, people, family, food, places, common verbs, numbers and time. Each day mixes one of each kind, so day 1 is 안녕, 하다, 사람, 좋다, 하나. After those, the rest of the list follows in frequency order. Each day moves on by 3, 4 or 5 words, and after the last word it starts over.
 - In a small slot (2 columns by 1 row) the widget is a card with three sides. Tap once and the word (Hangul, romanization, meaning) turns into an example sentence with its translation. Tap again and you see what each part of that sentence means, for example 안녕 = peace · 하 = be, do · 세요 = respectful polite ending. The next tap moves on to the next word. The card also steps forward by itself every hour.
 - Make the widget taller and it lists all of today's words.
 - Open the app to see today's words in large type, change how many you get per day, or hide the romanization.
@@ -59,9 +59,10 @@ To build on a PC instead, install JDK 17 or newer and the Android SDK packages `
 - Stray numbers after some words (`기 13`, `구 15`) are dropped.
 - Exact duplicates are removed. Words with several meanings stay as separate entries, so 말 shows up as "words, speaking", "end" and "horse". That leaves 5,643 entries.
 
-Two hand-written files sit next to it:
+The list is ranked by how often words appear in written Korean, so on its own it puts 안녕 at word 4,732 and newspaper words like 정부 (government) near the top. Three hand-written files sit next to it:
 
-- `data/examples.tsv` has one example sentence per word, with a translation and the sentence split into parts, each with its meaning. The source list had no examples, so these were written for this app; they are not from a dictionary. The build rejects an example whose parts don't join back into the sentence, or a verb whose dictionary form (가다, 먹다…) isn't named in its part. The first 100 words have examples so far; the rest show only the word until more are added.
+- `data/everyday_first.txt` picks 248 everyday words and moves them to the front. It has five sections (basics, verbs, nouns, describing words, numbers and time), and the build takes one word from each in turn. A few beginner words are not in the source list at all, so they cannot be included: 둘, 동생, 딸, 듣다, 돕다, 어떻게, 또, 나중에.
+- `data/examples.tsv` has one example sentence per word, with a translation and the sentence split into parts, each with its meaning. The source list had no examples, so these were written for this app; they are not from a dictionary. The build rejects an example whose parts don't join back into the sentence, or a verb whose dictionary form (가다, 먹다…) isn't named in its part. The first 306 words have examples, which is about two months at 5 words a day; later words show only the word until more are added.
 - `data/corrections.tsv` fixes meanings in the source list that are wrong or misleading, such as 여기 listed as "A hobby" (it means "here"). Each line gives the reason.
 
 Romanization follows the Revised Romanization of Korean, applied to how a word is pronounced: 한국어 → hangugeo, 국민 → gungmin, 같이 → gachi. One difference is deliberate: ㅎ sound changes apply to nouns too (축하 → chuka, where the official spelling is chukha), because the point is to show how the word sounds. Cases that need a dictionary are not covered. For example, compounds that insert an ㄴ come out wrong (솜이불 gives somibul instead of somnibul).

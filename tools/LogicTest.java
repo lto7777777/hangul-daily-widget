@@ -28,26 +28,46 @@ public final class LogicTest {
         }
         int total = words.size();
         check(total > 5300, "word count " + total);
-        WordList.Word first = words.get(0);
-        check(first.korean.equals("것") && first.roman.equals("geot"), "first word");
+
+        // Everyday words come first; day 1 starts with 안녕
+        check(words.get(0).korean.equals("안녕") && words.get(0).hasExample(), "first word is 안녕 with an example");
+        WordList.Word hello = words.get(5);
+        check(hello.korean.equals("안녕하다") && hello.example.equals("안녕하세요?"), "word 6 is 안녕하다");
+        check(hello.parts.size() == 3 && hello.parts.get(2).piece.equals("세요"), "안녕하세요 has three parts");
 
         // Examples came through the TSV intact
-        check(first.hasExample() && first.example.equals("이것은 뭐예요?"), "first example");
-        check(first.translation.equals("What is this?"), "first translation");
-        check(first.parts.size() == 5 && first.parts.get(1).piece.equals("것")
-                && first.parts.get(1).gloss.equals("thing"), "first example parts");
+        WordList.Word thing = null;
+        for (WordList.Word w : words) {
+            if (w.korean.equals("것")) {
+                thing = w;
+                break;
+            }
+        }
+        check(thing != null && thing.roman.equals("geot"), "것 is in the list");
+        check(thing != null && thing.example.equals("이것은 뭐예요?") && thing.translation.equals("What is this?"),
+                "것 example");
+        check(thing != null && thing.parts.size() == 5 && thing.parts.get(1).piece.equals("것")
+                && thing.parts.get(1).gloss.equals("thing"), "것 example parts");
         StringBuilder joined = new StringBuilder();
-        for (WordList.Part p : first.parts) {
-            joined.append(p.piece);
+        if (thing != null) {
+            for (WordList.Part p : thing.parts) {
+                joined.append(p.piece);
+            }
         }
         check(joined.toString().equals("이것은뭐예요"), "parts join back to the sentence");
         int withExample = 0;
-        for (WordList.Word w : words) {
+        int leadingRun = -1;
+        for (int i = 0; i < total; i++) {
+            WordList.Word w = words.get(i);
             withExample += w.hasExample() ? 1 : 0;
+            if (leadingRun < 0 && !w.hasExample()) {
+                leadingRun = i;
+            }
             check(!w.hasExample() || (!w.translation.isEmpty() && !w.parts.isEmpty()),
                     "example without translation or parts: " + w.korean);
         }
-        check(withExample >= 100, "at least 100 examples, got " + withExample);
+        check(withExample >= 300, "at least 300 examples, got " + withExample);
+        check(leadingRun >= 300, "the first 300 words all have examples, gap at " + leadingRun);
         check(!words.get(total - 1).hasExample(), "last word has no example yet");
 
         // Day-by-day progression

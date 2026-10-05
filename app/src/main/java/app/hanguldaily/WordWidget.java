@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.appwidget.AppWidgetProviderInfo;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -25,7 +27,7 @@ import java.util.List;
  * Today's words depend only on the date, so any update shows the right ones even if
  * the midnight alarm was held back by the phone's battery manager.
  */
-public final class WordWidget extends AppWidgetProvider {
+public class WordWidget extends AppWidgetProvider {
     static final String ACTION_NEXT = "app.hanguldaily.action.NEXT";
     static final String ACTION_REFRESH = "app.hanguldaily.action.REFRESH";
 
@@ -51,7 +53,10 @@ public final class WordWidget extends AppWidgetProvider {
 
     @Override
     public void onDisabled(Context context) {
-        context.getSystemService(AlarmManager.class).cancel(refreshIntent(context));
+        // Called per widget size; keep the alarm while the other size is still placed.
+        if (ids(context, AppWidgetManager.getInstance(context)).length == 0) {
+            context.getSystemService(AlarmManager.class).cancel(refreshIntent(context));
+        }
     }
 
     @Override
@@ -92,6 +97,11 @@ public final class WordWidget extends AppWidgetProvider {
         // Portrait size is min width x max height; both are 0 if the launcher does not report them.
         int widthDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 0);
         int heightDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, 0);
+        boolean big = isBig(manager, id);
+        if (big && heightDp <= 0) {
+            heightDp = Sizing.BIG_UNKNOWN_DP;
+            widthDp = widthDp > 0 ? widthDp : Sizing.BIG_UNKNOWN_DP;
+        }
         boolean roman = Store.showRoman(context);
 
         boolean[] hasExample = new boolean[today.length];
@@ -102,10 +112,20 @@ public final class WordWidget extends AppWidgetProvider {
         }
 
         RemoteViews views;
+        int hour = LocalTime.now().getHour();
         if (Sizing.fitsList(widthDp, heightDp, today.length, withExample)) {
             views = list(context, words, today, roman);
+        } else if (Sizing.combinedCard(heightDp) || (big && Sizing.roomyCard(heightDp))) {
+            // One face per word: everything about it fits on the card at once.
+            int[] face = DailyPlan.cardFace(hour, Store.taps(context, id), new boolean[today.length]);
+            WordList.Word word = words.get(today[face[0]]);
+            String counter = (face[0] + 1) + "/" + today.length;
+            views = word.hasExample()
+                    ? combinedCard(context, word, counter, widthDp, heightDp, roman)
+                    : wordCard(context, word, counter, widthDp, heightDp, roman);
+            views.setOnClickPendingIntent(R.id.card_root, nextIntent(context, id));
         } else {
-            int[] face = DailyPlan.cardFace(LocalTime.now().getHour(), Store.taps(context, id), hasExample);
+            int[] face = DailyPlan.cardFace(hour, Store.taps(context, id), hasExample);
             WordList.Word word = words.get(today[face[0]]);
             String counter = (face[0] + 1) + "/" + today.length;
             if (face[1] == DailyPlan.FACE_EXAMPLE) {
@@ -167,6 +187,38 @@ public final class WordWidget extends AppWidgetProvider {
         return v;
     }
 
+    private static RemoteViews combinedCard(Context context, WordList.Word word, String counter,
+                                            int widthDp, int heightDp, boolean roman) {
+        float koreanSp = Sizing.cardKoreanSp(word.korean, widthDp, false);
+        float sentenceSp = Sizing.combinedSentenceSp(word.example, widthDp);
+        int sentenceLines = Sizing.combinedSentenceLines(word.example, widthDp, sentenceSp);
+        int[] rest = Sizing.combinedRest(heightDp, koreanSp, sentenceSp, sentenceLines, roman);
+        RemoteViews v = new RemoteViews(context.getPackageName(), R.layout.widget_combined);
+        v.setTextViewText(R.id.card_counter, counter);
+        v.setTextViewText(R.id.card_korean, word.korean);
+        v.setTextViewTextSize(R.id.card_korean, TypedValue.COMPLEX_UNIT_SP, koreanSp);
+        v.setTextViewText(R.id.card_roman, word.roman);
+        v.setViewVisibility(R.id.card_roman, roman ? View.VISIBLE : View.GONE);
+        v.setTextViewText(R.id.card_meaning, word.meaning);
+        v.setTextViewText(R.id.example_sentence, word.example);
+        v.setTextViewTextSize(R.id.example_sentence, TypedValue.COMPLEX_UNIT_SP, sentenceSp);
+        v.setTextViewText(R.id.example_roman, word.exampleRoman);
+        v.setViewVisibility(R.id.example_roman, rest[1] == 1 ? View.VISIBLE : View.GONE);
+        v.setTextViewText(R.id.example_translation, word.translation);
+        if (rest[0] > 0) {
+            List<String> items = new ArrayList<>();
+            for (WordList.Part part : word.parts) {
+                items.add(part.piece + " = " + Sizing.shortGloss(part.gloss));
+            }
+            v.setTextViewText(R.id.parts_body, Sizing.packLines(items, rest[0]));
+            v.setInt(R.id.parts_body, "setMaxLines", rest[0]);
+            v.setViewVisibility(R.id.parts_body, View.VISIBLE);
+        } else {
+            v.setViewVisibility(R.id.parts_body, View.GONE);
+        }
+        return v;
+    }
+
     private static RemoteViews list(Context context, List<WordList.Word> words, int[] today, boolean roman) {
         String pkg = context.getPackageName();
         RemoteViews v = new RemoteViews(pkg, R.layout.widget_list);
@@ -218,8 +270,19 @@ public final class WordWidget extends AppWidgetProvider {
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
     }
 
+    /** Ids of every placed widget, both sizes. */
     private static int[] ids(Context context, AppWidgetManager manager) {
-        return manager.getAppWidgetIds(new ComponentName(context, WordWidget.class));
+        int[] small = manager.getAppWidgetIds(new ComponentName(context, WordWidget.class));
+        int[] big = manager.getAppWidgetIds(new ComponentName(context, WordWidgetBig.class));
+        int[] all = Arrays.copyOf(small, small.length + big.length);
+        System.arraycopy(big, 0, all, small.length, big.length);
+        return all;
+    }
+
+    private static boolean isBig(AppWidgetManager manager, int id) {
+        AppWidgetProviderInfo info = manager.getAppWidgetInfo(id);
+        return info != null && info.provider != null
+                && WordWidgetBig.class.getName().equals(info.provider.getClassName());
     }
 
     /** The receiver is exported, so only act on ids that belong to this app's widgets. */

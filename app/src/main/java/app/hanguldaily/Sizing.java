@@ -18,6 +18,10 @@ final class Sizing {
     static final int ROOMY_CARD_DP = 120;
     /** Assumed height when the launcher does not report one: a 2x1 slot. */
     static final int UNKNOWN_HEIGHT_DP = 100;
+    /** Assumed size of the 2x2 widget when the launcher does not report one. */
+    static final int BIG_UNKNOWN_DP = 160;
+    /** From this height the card shows word, example and parts together (one face per word). */
+    static final int COMBINED_MIN_DP = 150;
 
     private static final int CARD_PADDING_H_DP = 14 * 2;
     private static final int CARD_PADDING_V_DP = 10 * 2;
@@ -117,6 +121,44 @@ final class Sizing {
         int h = height(heightDp);
         float avail = h - CARD_PADDING_V_DP - CARD_MARGINS_DP - HEADER_LINE_DP;
         return clampLines(avail / SMALL_LINE_DP, 8);
+    }
+
+    static boolean combinedCard(int heightDp) {
+        return heightDp >= COMBINED_MIN_DP;
+    }
+
+    /** Example size on the combined card: up to 16sp on one line, else 14sp on two. */
+    static float combinedSentenceSp(String sentence, int widthDp) {
+        if (widthDp <= 0) {
+            return 14f;
+        }
+        float oneLine = (widthDp - CARD_PADDING_H_DP) / (ems(sentence) * 1.05f);
+        return oneLine >= 13f ? Math.min(16f, oneLine) : 14f;
+    }
+
+    static int combinedSentenceLines(String sentence, int widthDp, float sp) {
+        if (widthDp <= 0) {
+            return 2;
+        }
+        return ems(sentence) * 1.05f * sp > widthDp - CARD_PADDING_H_DP + 0.5f ? 2 : 1;
+    }
+
+    /**
+     * Space left for the parts on the combined card, after the word line, meaning,
+     * example and translation. Returns {parts lines (0 to 6), 1 if the example's
+     * romanization fits too, else 0}. Parts win over the example's romanization.
+     */
+    static int[] combinedRest(int heightDp, float koreanSp, float sentenceSp, int sentenceLines,
+                              boolean showRoman) {
+        float avail = heightDp - CARD_PADDING_V_DP - CARD_MARGINS_DP - koreanSp * 1.25f
+                - SMALL_LINE_DP - 6 - sentenceLines * sentenceSp * 1.3f - 15;
+        if (showRoman) {
+            int withRoman = (int) Math.floor((avail - 14) / 14);
+            if (withRoman >= 1) {
+                return new int[] {Math.min(6, withRoman), 1};
+            }
+        }
+        return new int[] {Math.max(0, Math.min(6, (int) Math.floor(avail / 14))), 0};
     }
 
     private static int clampLines(float lines, int max) {

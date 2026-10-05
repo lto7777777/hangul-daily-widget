@@ -137,6 +137,22 @@ public final class LogicTest {
         check(Sizing.packLines(five, 3).equals("a   b\nc   d\ne"), "two per line when they do not");
         check(Sizing.packLines(five, 1).equals("a   b   c   d   e"), "all on one line");
 
+        // 2x2 combined card: word, example and parts together
+        check(!Sizing.combinedCard(149) && Sizing.combinedCard(150), "combined card from 150dp");
+        float helloSp = Sizing.combinedSentenceSp("안녕! 잘 지냈어?", 160);
+        check(helloSp == 16f && Sizing.combinedSentenceLines("안녕! 잘 지냈어?", 160, helloSp) == 1,
+                "short example on one line at 16sp: " + helloSp);
+        String twoLines = "밥을 먹었어요. 그리고 잤어요.";
+        float twoSp = Sizing.combinedSentenceSp(twoLines, 160);
+        check(twoSp == 14f && Sizing.combinedSentenceLines(twoLines, 160, twoSp) == 2, "long example: 14sp, 2 lines");
+        check(Arrays.equals(Sizing.combinedRest(160, 26f, 16f, 1, true), new int[] {2, 1}),
+                "160dp: 2 parts lines plus the example's romanization, got "
+                        + Arrays.toString(Sizing.combinedRest(160, 26f, 16f, 1, true)));
+        check(Arrays.equals(Sizing.combinedRest(150, 26f, 14f, 2, true), new int[] {1, 0}),
+                "150dp, 2-line example: parts win over romanization");
+        check(Arrays.equals(Sizing.combinedRest(120, 26f, 14f, 2, false), new int[] {0, 0}),
+                "too short: no parts line");
+
         // Every word must render something in each field the widget shows
         String longestWord = "";
         String longestExample = "";

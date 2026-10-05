@@ -3,6 +3,8 @@
     <string name="app_name">Hangul Daily</string>
     <string name="widget_label">Hangul Daily</string>
     <string name="widget_description">3 to 5 Korean words a day</string>
+    <string name="widget_big_label">Hangul Daily (2×2)</string>
+    <string name="widget_big_description">Word, example and its parts on one card</string>
     <string name="today">오늘의 단어</string>
     <string name="day_n">Day %1$d</string>
     <string name="subtitle">Day %1$d · from word %2$d of %3$d</string>
